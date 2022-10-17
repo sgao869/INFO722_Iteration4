@@ -1,0 +1,10 @@
+#
+# plot the popular items & correlated item pairs
+#
+item_names = [item_idx_to_names_map[elem[0]] for elem in topK]
+item_freqs = [elem[1] for elem in topK]
+#
+plt.figure(figsize=(10, 8))
+plt.plot(item_names, item_freqs)
+plt.xticks(rotation=90)
+plt.title('Frequency of each item', fontsize=20)
