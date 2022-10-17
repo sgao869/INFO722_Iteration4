@@ -1,21 +1,28 @@
-%matplotlib inline
-from matplotlib import pyplot as plt
-import numpy as np
-
-data_file = 'groceries - groceries.csv'
-with open(data_file, 'r') as fp:
-    # load the baskets
-    csv_content = np.loadtxt(fp, str, delimiter=',')
-    # remove the first row & column that we do not need
-    # then each one represents a basket
-    csv_content = csv_content[1:,1:]
 #
-basket_items = []
+# traverse & obtain the name map
+item_names_map = {}
+for basket in basket_items:
+    for item in basket:
+        # all names are converted into lowercase
+        # so that 'Milk' and 'milk' are treated the same
+        item = item.lower()
+        # name already mapped?
+        if item in item_names_map:
+            continue
+        # a new item name? then map it with an index
+        item_names_map[item] = len(item_names_map)
 #
-# remove empty fields
-for basket in csv_content:
-    basket = list(filter(lambda e:len(e)>0, basket))
-    basket_items.append(basket)
+print('Number of distinct items: %d'%len(item_names_map))
 #
-# output the first 10 baskets
-print(basket_items[:10])
+# convert each item into its id(index)
+converted_baskets = []
+for basket in basket_items:
+    converted_basket = []
+    for item in basket:
+        item = item.lower()
+        # record the item by its index(id) in the name map
+        converted_basket.append(item_names_map[item])
+    converted_baskets.append(converted_basket)
+#
+print('The first 10 baskets are converted as followings:')
+print(converted_baskets[:10])
