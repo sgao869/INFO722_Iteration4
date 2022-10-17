@@ -1,0 +1,39 @@
+from queue import PriorityQueue
+#
+def topKpopularItems(baskets, k):
+    #
+    # calculate the frequencies of each item
+    counter = [0] * len(item_names_map)
+    # traverse the baskets & calculate the counters
+    for basket in converted_baskets:
+        for item in basket:
+            # increase the counter of the given item
+            counter[item] += 1
+    # min root heap
+    topK_popular_items = PriorityQueue()
+    for item_idx in list(range(len(counter))):
+        # with priority counter[item_idx] to construct a min root heap
+        topK_popular_items.put((counter[item_idx], item_idx))
+        if topK_popular_items.qsize() > K:
+            topK_popular_items.get()
+    # sort in descending order
+    topK = []
+    while not topK_popular_items.empty():
+        frequency, item_idx = topK_popular_items.get()
+        topK.append((item_idx, frequency))
+    # in descending order
+    topK.reverse()
+    return topK
+#
+K = 20
+topK = topKpopularItems(converted_baskets, K)
+#
+# for the convenient of looking up item name for a given item index
+item_idx_to_names_map = {}
+for name in item_names_map:
+    idx = item_names_map[name]
+    item_idx_to_names_map[idx] = name
+# output the item name & its frequency in descending order
+for elem in topK:
+    item_idx, freq = elem
+    print('%s: %d'%(item_idx_to_names_map[item_idx], freq))
