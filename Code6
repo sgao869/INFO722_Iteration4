@@ -1,0 +1,15 @@
+item_pairs = Apriori(converted_baskets, 2, len(counter))
+# output the item pair names & corresponding frequencies
+item_pair_names = []
+item_pair_freqs = []
+delimiter = '_'
+for (itemset, freq) in item_pairs:
+    items = [int(e) for e in itemset.split(delimiter)]
+    item_pair_names.append('%s + %s'%(item_idx_to_names_map[items[0]], item_idx_to_names_map[items[1]]))
+    item_pair_freqs.append(freq)
+#
+# plot the first 10 item pairs
+plt.figure(figsize=(10, 8))
+plt.plot(item_pair_names[:15], item_pair_freqs[:15])
+plt.xticks(rotation=60)
+plt.title('Frequencies of top-15 item pair')
