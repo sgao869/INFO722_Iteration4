@@ -1,0 +1,21 @@
+%matplotlib inline
+from matplotlib import pyplot as plt
+import numpy as np
+
+data_file = 'groceries - groceries.csv'
+with open(data_file, 'r') as fp:
+    # load the baskets
+    csv_content = np.loadtxt(fp, str, delimiter=',')
+    # remove the first row & column that we do not need
+    # then each one represents a basket
+    csv_content = csv_content[1:,1:]
+#
+basket_items = []
+#
+# remove empty fields
+for basket in csv_content:
+    basket = list(filter(lambda e:len(e)>0, basket))
+    basket_items.append(basket)
+#
+# output the first 10 baskets
+print(basket_items[:10])
