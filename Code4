@@ -1,0 +1,83 @@
+#
+# finding out the correlated item pairs by Apriori algorithm
+# 
+def Apriori(baskets, k, n, threshold=None):
+    # construct item idx hash map for fast reference later
+    basket_items_map = []
+    for basket in baskets:
+        item_map = {}
+        for item in basket:
+            item_map[str(item)] = True
+        basket_items_map.append(item_map)
+    #
+    I = []
+    for i in list(range(k)):
+        I.append([])
+    # all single items construct the candidate C[0] for I[0]
+    C = topKpopularItems(baskets, n)
+    for (item_idx, freq) in C:
+        # if threshold not set or the frequency of an itemset is no less than the threshold
+        # then it is an itemset in I
+        if threshold is None or freq >= threshold:
+            I[0].append((str(item_idx), freq))
+    #
+    # delimiter of itemset
+    delimiter = '_'
+    for i in list(range(1, k)):
+        prev_I = I[i-1]
+        uniq_items = {}
+        for (itemset, freq) in prev_I:
+            items = itemset.split(delimiter)
+            for item in items:
+                if item not in uniq_items:
+                    uniq_items[item] = True
+        # try to construct all potential itemset with length+1 (I[i+1])
+        n_itemset = {}
+        for (itemset, freq) in prev_I:
+            items = itemset.split(delimiter)
+            for extra in uniq_items:
+                if (extra not in items): # valid for constructing new itemset with length increased by 1
+                    nitems = list(items)
+                    nitems.append(extra)
+                    nitems.sort() # sort in ascending order so that the key is unique for same combination
+                    nitems_key = delimiter.join(nitems)
+                    n_itemset[nitems_key] = 0
+            #
+        # now we calculate the frequency of each item in the newly constructed itemset
+        counter = {}
+        for itemset in n_itemset:
+            items = itemset.split(delimiter)
+            for basket in basket_items_map:
+                exists= True # we firstly assume the itemset appear in the basket
+                for item in items:
+                    if item not in basket:
+                        exists = False
+                        break
+                # the itemset appear in the basket, then increase the counter
+                if exists:
+                    if itemset not in counter:
+                        counter[itemset] = 0
+                    counter[itemset] += 1
+        # traverse the counter & filter those invalid itemset(less than the threshold)
+        for itemset in counter:
+            if threshold is None or counter[itemset] >= threshold:
+                I[i].append((itemset, counter[itemset]))
+    # sort the itemset in descending order
+    pq = PriorityQueue()
+    for (itemset, freq) in I[k-1]:
+        pq.put((freq, itemset))
+    #
+    I[k-1] = []
+    while not pq.empty():
+        (freq, itemset) = pq.get()
+        I[k-1].append((itemset, freq))
+    # reverse order
+    I[k-1].reverse()
+    return I[k-1]
+#
+item_pairs = Apriori(converted_baskets, 2, len(counter))
+# output the item pair names & corresponding frequencies
+delimiter = '_'
+for (itemset, freq) in item_pairs:
+    items = [int(e) for e in itemset.split(delimiter)]
+    print('(%s, %s): %d'%(item_idx_to_names_map[items[0]], item_idx_to_names_map[items[1]], freq))
